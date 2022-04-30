@@ -21,30 +21,18 @@ def mainMenu():
 def viewAll():
     f = open("competitors.csv", "r")
     comptxt = f.readlines()
-    first = 32766
-    first_name = ""
-    second = 0
-    second_name = ""
-    third = 0
-    third_name = ""
+    bubbleSort(comptxt)
     total = 0
-    average = 0
     for line in comptxt:
         name = nameAndScore(line)[0]
         score = nameAndScore(line)[1]
         print("Name: ",name)
         print("Score: ",score)
         total += int(score)
-        if int(score) < first:
-            third = second
-            third_name = second_name
-            second = first
-            second_name = first_name
-            first = int(score)
-            first_name = name
-    print("First Place: "+first_name+" with a time of "+str(first))
-    print("Second Place: "+second_name+" with a time of "+str(second))
-    print("Third Place: "+third_name+" with a time of "+str(third))
+
+    print("First Place: "+nameAndScore(comptxt[0])[0]+" with a score of "+str(nameAndScore(comptxt[0])[1]))
+    print("Second Place: "+nameAndScore(comptxt[1])[0]+" with a score of "+str(nameAndScore(comptxt[1])[1]))
+    print("Third Place: "+nameAndScore(comptxt[2])[0]+" with a score of "+str(nameAndScore(comptxt[2])[1]))
     print("Average Time: "+str(total/len(comptxt)))
     f.close()
     mainMenu()
@@ -66,7 +54,7 @@ def nameAndScore(line):
 def addRecord():
     name = input("Please enter the competitor's name")
     score = input("Please enter the competitor's score")
-    competitor_to_add = name+","+score
+    competitor_to_add = name+","+score+"\n"
     f = open("Competitors.csv", "a")
     f.write(competitor_to_add)
     f.close()
@@ -75,9 +63,36 @@ def addRecord():
 def searchRecord():
     while True:
         query_type = int(input("Please enter 1 to search name, and 2 to search score"))
-        if query_type == (1 or 2):
+        if (query_type == 1) or (query_type == 2):
             break
         else:
             print("Invalid input, please try again.")
+    query = input("What is your query?")
+    searchWithQuery(query, query_type)
+
+def searchWithQuery(query, query_type):
+    has_found = False
+    f = open("Competitors.csv", "r")
+    comptxt = f.readlines()
+    for line in comptxt:
+        if nameAndScore(line)[query_type - 1] == query:
+            found_item = nameAndScore(line)
+            has_found = True
+            break
+    if has_found:
+        print("Item Found!")
+        print("Name: ",found_item[0])
+        print("Score: ",found_item[1])
+        mainMenu()
+    else:
+        print("No item found. Try putting in a more precise query.")
+        searchRecord()
+    f.close()
+
+def bubbleSort(list_to_sort):
+    for i in range(len(list_to_sort)):
+        for j in range(len(list_to_sort) - 1):
+            if int(nameAndScore(list_to_sort[j])[1]) > int(nameAndScore(list_to_sort[j+1])[1]):
+                list_to_sort[j], list_to_sort[j+1] = list_to_sort[j+1], list_to_sort[j]
 
 mainMenu()
